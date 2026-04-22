@@ -4,6 +4,20 @@ import time
 
 st.set_page_config(page_title="SOC Academy", page_icon="🛡️", layout="centered")
 
+# CSS para remover a cor de destaque (foco) dos botões do Streamlit
+st.markdown("""
+    <style>
+    button:focus {
+        box-shadow: none !important;
+        outline: none !important;
+        border-color: rgba(0,0,0,0) !important;
+    }
+    div[st-vertical-block] > div {
+        background-color: transparent !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 st.title("🛡️ SOC Academy")
 
 # Inicializa as variáveis de sessão
