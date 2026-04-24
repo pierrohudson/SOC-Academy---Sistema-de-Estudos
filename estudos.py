@@ -1,110 +1,70 @@
-import streamlit as st
-import random
+import os
 
-# Configuração da página
-st.set_page_config(page_title="Simulado Prova Cyber - Hudson", page_icon="🛡️", layout="centered")
+# Base de dados das questões
+questoes = [
+    {
+        "pergunta": "Qual o principal objetivo do Princípio do Menor Privilégio (PoLP)?",
+        "opcoes": ["A) Acesso total", "B) Minimizar superfície de ataque", "C) Aumentar velocidade", "D) Eliminar MFA"],
+        "resposta": "B",
+        "explicacao": "O PoLP garante que o usuário tenha apenas o estritamente necessário para sua função."
+    },
+    {
+        "pergunta": "No modelo RBAC, o acesso é baseado em:",
+        "opcoes": ["A) Vontade do dono", "B) Etiquetas de segurança", "C) Funções ou cargos", "D) Endereço IP"],
+        "resposta": "C",
+        "explicacao": "RBAC significa Role-Based Access Control (Controle de Acesso Baseado em Papéis/Cargos)."
+    },
+    {
+        "pergunta": "Qual etapa do IAAA gera logs para rastreabilidade?",
+        "opcoes": ["A) Identificação", "B) Autenticação", "C) Autorização", "D) Auditoria"],
+        "resposta": "D",
+        "explicacao": "A Auditoria (Accountability) é o que permite registrar e revisar ações passadas."
+    }
+]
 
-# --- INICIALIZAÇÃO DO BANCO DE DADOS ---
-if 'questoes' not in st.session_state:
-    # Suas novas questões enviadas agora
-    novas_questoes = [
-     {
-            "pergunta": "1. Um analista detecta que um banco de dados foi alterado sem autorização, mas os serviços continuam online. Qual pilar da tríade CIA foi violado?",
-            "opcoes": ["A) Confidencialidade", "B) Integridade", "C) Disponibilidade", "D) Autenticidade"],
-            "resposta": "B"
-        },
-        {
-            "pergunta": "2. Qual o protocolo de criptografia que utiliza um par de chaves (pública e privada)?",
-            "opcoes": ["A) Simétrica", "B) Hashing", "C) Assimétrica", "D) Esteganografia"],
-            "resposta": "C"
-        },
-        {
-            "pergunta": "3. De acordo com o NIST CSF, 'Identificar, Proteger, Detectar, Responder e Recuperar' representam:",
-            "opcoes": ["A) Os controles da ISO 27001", "B) As funções do Core Framework", "C) Tipos de ameaças de rede", "D) Etapas da gestão de incidentes"],
-            "resposta": "B"
-        },
-        {
-            "pergunta": "4. Um Firewall e um treinamento de conscientização de usuários são, respectivamente, controles do tipo:",
-            "opcoes": ["A) Lógico e Administrativo", "B) Físico e Lógico", "C) Administrativo e Físico", "D) Técnico e Físico"],
-            "resposta": "A"
-        },
-        {
-            "pergunta": "5. Na gestão de riscos, quando uma empresa contrata um seguro contra ataques cibernéticos, ela está:",
-            "opcoes": ["A) Mitigando o risco", "B) Aceitando o risco", "C) Transferindo o risco", "D) Evitando o risco"],
-            "resposta": "C"
-        }
-    ]
+def limpar_tela():
+    # Limpa o terminal dependendo do sistema operacional (Windows ou Unix)
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-   
+def sistema_simulado():
+    pontos = 0
+    total = len(questoes)
 
-    # Unindo e embaralhando
-    total_questoes = novas_questoes + questoes_anteriores
-    random.shuffle(total_questoes)
-    st.session_state.questoes = total_questoes
-
-# --- ESTADOS DO SISTEMA ---
-if 'indice' not in st.session_state:
-    st.session_state.indice = 0
-if 'pontos' not in st.session_state:
-    st.session_state.pontos = 0
-if 'respondido' not in st.session_state:
-    st.session_state.respondido = False
-if 'finalizado' not in st.session_state:
-    st.session_state.finalizado = False
-
-# --- FUNÇÕES ---
-def proxima_questao():
-    if st.session_state.indice < len(st.session_state.questoes) - 1:
-        st.session_state.indice += 1
-        st.session_state.respondido = False
-    else:
-        st.session_state.finalizado = True
-
-def reiniciar():
-    st.session_state.indice = 0
-    st.session_state.pontos = 0
-    st.session_state.respondido = False
-    st.session_state.finalizado = False
-    random.shuffle(st.session_state.questoes)
-
-# --- INTERFACE ---
-st.title("🛡️ Simulado Preparatório SOC II")
-
-if not st.session_state.finalizado:
-    q = st.session_state.questoes[st.session_state.indice]
-    
-    st.info(f"**Tema:** {q['tema']} | Questão {st.session_state.indice + 1}/{len(st.session_state.questoes)}")
-    st.markdown(f"### {q['pergunta']}")
-    
-    escolha = st.radio("Selecione a alternativa correta:", q['opcoes'], index=None, key=f"q_{st.session_state.indice}")
-
-    if not st.session_state.respondido:
-        if st.button("Confirmar Resposta"):
-            if escolha:
-                st.session_state.respondido = True
-                # Lógica para bater a letra (A, B, C ou D) com o início da string escolhida
-                if escolha.startswith(q['resposta']):
-                    st.session_state.pontos += 1
-                    st.toast("Correto! 🎯", icon="✅")
-                else:
-                    st.toast("Errado... ❌", icon="⚠️")
-                st.rerun()
-            else:
-                st.warning("Selecione uma opção!")
-    else:
-        if escolha.startswith(q['resposta']):
-            st.success(f"Excelente! Você acertou.")
-        else:
-            st.error(f"Incorreto. A resposta certa era a letra {q['resposta']}.")
+    for idx, q in enumerate(questoes):
+        limpar_tela()
+        print(f"=== SIMULADO DE SEGURANÇA: QUESTÃO {idx + 1} DE {total} ===")
+        print(f"\n{q['pergunta']}\n")
         
-        st.button("Próxima Questão ➡️", on_click=proxima_questao)
+        for opcao in q['opcoes']:
+            print(opcao)
+        
+        # Validação da entrada do usuário
+        while True:
+            resp = input("\nSua resposta (A, B, C ou D): ").upper()
+            if resp in ['A', 'B', 'C', 'D']:
+                break
+            print("Entrada inválida! Escolha A, B, C ou D.")
 
-else:
-    st.balloons()
-    st.header("🏁 Resultado do Simulado")
-    score = (st.session_state.pontos / len(st.session_state.questoes)) * 100
-    st.metric("Acertos", f"{st.session_state.pontos}/{len(st.session_state.questoes)}", f"{score:.1f}%")
+        # Verificação
+        if resp == q['resposta']:
+            print("\n✅ CERTO!")
+            pontos += 1
+        else:
+            print(f"\n❌ ERRADO! A correta era: {q['resposta']}")
+        
+        print(f"Explicação: {q['explicacao']}")
+        
+        input("\nPressione [ENTER] para passar para a próxima...")
+
+    limpar_tela()
+    print("=== FIM DO SIMULADO ===")
+    print(f"Você acertou {pontos} de {total} questões.")
     
-    st.button("Tentar Novamente 🔄", on_click=reiniciar)
+    percentual = (pontos / total) * 100
+    if percentual >= 70:
+        print(f"Desempenho: {percentual:.1f}% - Você está pronto para a prova!")
+    else:
+        print(f"Desempenho: {percentual:.1f}% - Recomendo revisar os conceitos.")
 
-st.sidebar.write(f"📊 Pontuação Atual: {st.session_state.pontos}")
+if __name__ == "__main__":
+    sistema_simulado()
