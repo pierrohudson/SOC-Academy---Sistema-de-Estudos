@@ -1,5 +1,3 @@
-import os
-
 # Base de dados das questões
 questoes = [
     {
@@ -18,53 +16,48 @@ questoes = [
         "pergunta": "Qual etapa do IAAA gera logs para rastreabilidade?",
         "opcoes": ["A) Identificação", "B) Autenticação", "C) Autorização", "D) Auditoria"],
         "resposta": "D",
-        "explicacao": "A Auditoria (Accountability) é o que permite registrar e revisar ações passadas."
+        "explicacao": "A Auditoria (Accountability) permite registrar e revisar ações passadas."
     }
 ]
-
-def limpar_tela():
-    # Limpa o terminal dependendo do sistema operacional (Windows ou Unix)
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def sistema_simulado():
     pontos = 0
     total = len(questoes)
 
-    for idx, q in enumerate(questoes):
-        limpar_tela()
-        print(f"=== SIMULADO DE SEGURANÇA: QUESTÃO {idx + 1} DE {total} ===")
-        print(f"\n{q['pergunta']}\n")
+    print("-" * 40)
+    print("INICIANDO SIMULADO DE SEGURANÇA")
+    print("-" * 40)
+
+    for i, q in enumerate(questoes):
+        print(f"\nQUESTÃO {i + 1} de {total}")
+        print(q["pergunta"])
         
-        for opcao in q['opcoes']:
+        for opcao in q["opcoes"]:
             print(opcao)
         
-        # Validação da entrada do usuário
-        while True:
-            resp = input("\nSua resposta (A, B, C ou D): ").upper()
-            if resp in ['A', 'B', 'C', 'D']:
-                break
-            print("Entrada inválida! Escolha A, B, C ou D.")
+        # Loop para garantir que o usuário digite uma opção válida
+        resposta_usuario = ""
+        while resposta_usuario not in ["A", "B", "C", "D"]:
+            resposta_usuario = input("\nSua resposta (A, B, C ou D): ").upper().strip()
 
-        # Verificação
-        if resp == q['resposta']:
-            print("\n✅ CERTO!")
+        # Verifica se acertou
+        if resposta_usuario == q["resposta"]:
+            print("\n✅ CORRETO!")
             pontos += 1
         else:
-            print(f"\n❌ ERRADO! A correta era: {q['resposta']}")
+            print(f"\n❌ ERRADO. A resposta certa era a letra {q['resposta']}.")
         
         print(f"Explicação: {q['explicacao']}")
-        
-        input("\nPressione [ENTER] para passar para a próxima...")
+        print("-" * 30)
 
-    limpar_tela()
-    print("=== FIM DO SIMULADO ===")
-    print(f"Você acertou {pontos} de {total} questões.")
+    # Resultado Final
+    print(f"\n=== FIM DO TESTE ===")
+    print(f"Total de acertos: {pontos} de {total}")
     
-    percentual = (pontos / total) * 100
-    if percentual >= 70:
-        print(f"Desempenho: {percentual:.1f}% - Você está pronto para a prova!")
-    else:
-        print(f"Desempenho: {percentual:.1f}% - Recomendo revisar os conceitos.")
+    # Cálculo de aproveitamento
+    aproveitamento = (pontos / total) * 100
+    print(f"Aproveitamento: {aproveitamento:.1f}%")
 
+# Executa o sistema
 if __name__ == "__main__":
     sistema_simulado()
