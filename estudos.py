@@ -8,46 +8,34 @@ st.set_page_config(page_title="Simulado Prova Cyber - Hudson", page_icon="🛡�
 if 'questoes' not in st.session_state:
     # Suas novas questões enviadas agora
     novas_questoes = [
-        {
-            "tema": "Fundamentos/NIST",
-            "pergunta": "Um analista detecta que um banco de dados foi alterado sem autorização, mas os serviços continuam online. Qual pilar da tríade CIA foi violado?",
+     {
+            "pergunta": "1. Um analista detecta que um banco de dados foi alterado sem autorização, mas os serviços continuam online. Qual pilar da tríade CIA foi violado?",
             "opcoes": ["A) Confidencialidade", "B) Integridade", "C) Disponibilidade", "D) Autenticidade"],
             "resposta": "B"
         },
         {
-            "tema": "Criptografia",
-            "pergunta": "Qual o protocolo de criptografia que utiliza um par de chaves (pública e privada)?",
+            "pergunta": "2. Qual o protocolo de criptografia que utiliza um par de chaves (pública e privada)?",
             "opcoes": ["A) Simétrica", "B) Hashing", "C) Assimétrica", "D) Esteganografia"],
             "resposta": "C"
         },
         {
-            "tema": "Frameworks",
-            "pergunta": "De acordo com o NIST CSF, 'Identificar, Proteger, Detectar, Responder e Recuperar' representam:",
+            "pergunta": "3. De acordo com o NIST CSF, 'Identificar, Proteger, Detectar, Responder e Recuperar' representam:",
             "opcoes": ["A) Os controles da ISO 27001", "B) As funções do Core Framework", "C) Tipos de ameaças de rede", "D) Etapas da gestão de incidentes"],
             "resposta": "B"
         },
         {
-            "tema": "Controles",
-            "pergunta": "Um Firewall e um treinamento de conscientização de usuários são, respectivamente, controles do tipo:",
+            "pergunta": "4. Um Firewall e um treinamento de conscientização de usuários são, respectivamente, controles do tipo:",
             "opcoes": ["A) Lógico e Administrativo", "B) Físico e Lógico", "C) Administrativo e Físico", "D) Técnico e Físico"],
             "resposta": "A"
         },
         {
-            "tema": "Gestão de Riscos",
-            "pergunta": "Na gestão de riscos, quando uma empresa contrata um seguro contra ataques cibernéticos, ela está:",
+            "pergunta": "5. Na gestão de riscos, quando uma empresa contrata um seguro contra ataques cibernéticos, ela está:",
             "opcoes": ["A) Mitigando o risco", "B) Aceitando o risco", "C) Transferindo o risco", "D) Evitando o risco"],
             "resposta": "C"
         }
     ]
 
-    # Questões anteriores (resumo das principais)
-    questoes_anteriores = [
-        {"tema": "IA", "pergunta": "O que é Alucinação na IA Generativa?", "opcoes": ["A) IA lenta", "B) IA gerando fatos falsos com convicção", "C) IA hackeada", "D) Falha de hardware"], "resposta": "B"},
-        {"tema": "Ataques", "pergunta": "O que caracteriza o Ransomware?", "opcoes": ["A) Roubo de cookies", "B) Criptografia de dados para extorsão", "C) Somente espionagem", "D) DNS Poisoning"], "resposta": "B"},
-        {"tema": "Web Security", "pergunta": "Como prevenir SQL Injection?", "opcoes": ["A) Usar HTTPS", "B) Prepared Statements", "C) Firewall físico", "D) Mudar a senha do admin"], "resposta": "B"},
-        {"tema": "Logs", "pergunta": "Qual ferramenta centraliza e correlaciona eventos?", "opcoes": ["A) Proxy", "B) SIEM", "C) Wireshark", "D) DLP"], "resposta": "B"},
-        {"tema": "Continuidade", "pergunta": "O que define o RPO?", "opcoes": ["A) Tempo de restauração", "B) Quantidade máxima de perda de dados aceitável", "C) Custo do incidente", "D) Lista de contatos"], "resposta": "B"}
-    ]
+   
 
     # Unindo e embaralhando
     total_questoes = novas_questoes + questoes_anteriores
