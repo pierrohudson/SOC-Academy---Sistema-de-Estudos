@@ -1,127 +1,164 @@
 import streamlit as st
 import random
-import time
 
-st.set_page_config(page_title="SOC Academy", page_icon="🛡️", layout="centered")
+# Configuração da página
+st.set_page_config(page_title="Simulado Prova Cyber - Hudson", page_icon="🛡️", layout="centered")
 
-# CSS para remover a cor de destaque (foco) dos botões do Streamlit
-st.markdown("""
-    <style>
-    button:focus {
-        box-shadow: none !important;
-        outline: none !important;
-        border-color: rgba(0,0,0,0) !important;
-    }
-    div[st-vertical-block] > div {
-        background-color: transparent !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-st.title("🛡️ SOC Academy")
-
-# Inicializa as variáveis de sessão
+# --- INICIALIZAÇÃO DO BANCO DE DADOS (45 QUESTÕES) ---
 if 'questoes' not in st.session_state:
-    # Coloque aqui todas as questões que te mandei antes
-    st.session_state.questoes = [
-       
-    # --- 1. FUNDAMENTOS DE SEGURANÇA DA INFORMAÇÃO ---
-    {"tema": "Fundamentos", "pergunta": "Qual pilar da segurança é garantido pelo uso de funções de Hash para verificar se um arquivo foi alterado?", "opcoes": ["Confidencialidade", "Integridade", "Disponibilidade", "Autenticidade"], "resposta": "Integridade"},
-    {"tema": "Fundamentos", "pergunta": "O conceito de 'Não-Repúdio' garante que:", "opcoes": ["O sistema esteja sempre online", "O autor de uma ação não possa negar sua autoria", "Os dados sejam criptografados em repouso", "Apenas administradores acessem o banco"], "resposta": "O autor de uma ação não possa negar sua autoria"},
-    {"tema": "Fundamentos", "pergunta": "Qual controle de segurança é considerado 'Dissuasivo'?", "opcoes": ["Um Firewall", "Um Backup", "Placas de aviso de monitoramento por câmeras", "Criptografia de disco"], "resposta": "Placas de aviso de monitoramento por câmeras"},
-    {"tema": "Fundamentos", "pergunta": "O que define a 'Segurança por Obscuridade'?", "opcoes": ["Criptografia de ponta a ponta", "Tentar proteger um sistema escondendo como ele funciona", "Usar senhas muito longas", "Monitorar o tráfego em tempo real"], "resposta": "Tentar proteger um sistema escondendo como ele funciona"},
-    {"tema": "Fundamentos", "pergunta": "Qual a principal função da Governança de Segurança da Informação?", "opcoes": ["Configurar regras de Firewall", "Alinhar a estratégia de segurança aos objetivos do negócio", "Trocar senhas de usuários", "Instalar patches de segurança"], "resposta": "Alinhar a estratégia de segurança aos objetivos do negócio"},
+    questoes_base = [
+        # 1. FUNDAMENTOS
+        {"tema": "Fundamentos", "pergunta": "Qual pilar da tríade CID é garantido pelo uso de assinaturas digitais e hashes?", "opcoes": ["Confidencialidade", "Integridade", "Disponibilidade", "Não-Repúdio"], "resposta": "Integridade"},
+        {"tema": "Fundamentos", "pergunta": "O conceito de 'Defesa em Profundidade' foca em:", "opcoes": ["Um único firewall potente", "Múltiplas camadas de proteção", "Apenas treinamento de usuários", "Criptografia de disco apenas"], "resposta": "Múltiplas camadas de proteção"},
+        {"tema": "Fundamentos", "pergunta": "Qual o objetivo do pilar 'Disponibilidade'?", "opcoes": ["Esconder dados", "Garantir acesso aos sistemas quando necessário", "Evitar alteração de dados", "Identificar usuários"], "resposta": "Garantir acesso aos sistemas quando necessário"},
+        {"tema": "Fundamentos", "pergunta": "O que é 'Autenticidade' na segurança?", "opcoes": ["Garantir a identidade da fonte", "Bloquear hackers", "Fazer backup", "Limpar logs"], "resposta": "Garantir a identidade da fonte"},
+        {"tema": "Fundamentos", "pergunta": "O que caracteriza o 'Não-Repúdio'?", "opcoes": ["Impossibilidade de negar a autoria de uma transação", "Bloqueio de IPs", "Troca de senhas", "Criptografia de e-mail"], "resposta": "Impossibilidade de negar a autoria de uma transação"},
 
-    # --- 2. CONTROLE DE ACESSO E MENOR PRIVILÉGIO ---
-    {"tema": "Controle de Acesso", "pergunta": "O que é o 'Privileged Access Management' (PAM)?", "opcoes": ["Um tipo de antivírus", "Controle e monitoramento de contas com altos privilégios (admins)", "Um método de login sem senha", "Aumentar a velocidade da rede corporativa"], "resposta": "Controle e monitoramento de contas com altos privilégios (admins)"},
-    {"tema": "Controle de Acesso", "pergunta": "No modelo RBAC, as permissões são atribuídas com base em:", "opcoes": ["No desejo do usuário", "Na função ou cargo do colaborador", "No endereço IP da máquina", "Na marca do computador"], "resposta": "Na função ou cargo do colaborador"},
-    {"tema": "Controle de Acesso", "pergunta": "Qual é um exemplo de autenticação baseada em 'Algo que você é'?", "opcoes": ["Uma senha complexa", "Um token OTP", "Impressão digital ou biometria facial", "Um cartão magnético"], "resposta": "Impressão digital ou biometria facial"},
-    {"tema": "Controle de Acesso", "pergunta": "O que caracteriza o modelo de controle de acesso MAC (Mandatory Access Control)?", "opcoes": ["O usuário decide quem acessa seus arquivos", "O acesso é definido pelo sistema com base em rótulos de sensibilidade", "O acesso é liberado apenas por horário", "Não há restrições de acesso"], "resposta": "O acesso é definido pelo sistema com base em rótulos de sensibilidade"},
-    {"tema": "Controle de Acesso", "pergunta": "Qual o principal risco de não aplicar o 'Princípio do Menor Privilégio'?", "opcoes": ["O computador ficar lento", "Facilitar o movimento lateral de um atacante na rede", "Aumento do custo de licenças", "Melhorar a experiência do usuário"], "resposta": "Facilitar o movimento lateral de um atacante na rede"},
+        # 2. CONTROLE DE ACESSO
+        {"tema": "Controle de Acesso", "pergunta": "O que define o modelo RBAC?", "opcoes": ["Acesso por IP", "Acesso baseado em papéis/funções", "Dono do arquivo decide", "Acesso por biometria apenas"], "resposta": "Acesso baseado em papéis/funções"},
+        {"tema": "Controle de Acesso", "pergunta": "O 'Menor Privilégio' visa reduzir:", "opcoes": ["O salário", "A superfície de ataque", "A velocidade da rede", "O espaço em disco"], "resposta": "A superfície de ataque"},
+        {"tema": "Controle de Acesso", "pergunta": "O modelo DAC é considerado 'discricionário' porque:", "opcoes": ["É obrigatório", "O dono do objeto concede permissão", "É baseado em leis", "É automático"], "resposta": "O dono do objeto concede permissão"},
+        {"tema": "Controle de Acesso", "pergunta": "O que é Segregação de Funções (SoD)?", "opcoes": ["Trabalhar sozinho", "Dividir etapas de um processo crítico entre pessoas diferentes", "Demitir funcionários", "Usar senhas diferentes"], "resposta": "Dividir etapas de um processo crítico entre pessoas diferentes"},
+        {"tema": "Controle de Acesso", "pergunta": "Qual exemplo de 'Algo que você tem' no MFA?", "opcoes": ["Senha", "Token físico ou App Autenticador", "Digital", "PIN"], "resposta": "Token físico ou App Autenticador"},
 
-    # --- 3. ATAQUES CIBERNÉTICOS ---
-    {"tema": "Ataques", "pergunta": "Um ataque de 'Smishing' utiliza qual meio de comunicação?", "opcoes": ["E-mail", "Mensagens de texto (SMS)", "Chamadas de voz", "Redes Sociais"], "resposta": "Mensagens de texto (SMS)"},
-    {"tema": "Ataques", "pergunta": "Qual a diferença entre um Worm e um Vírus?", "opcoes": ["Worms precisam de intervenção humana; Vírus não", "Vírus se autorreplicam sozinhos pela rede; Worms não", "Worms se propagam automaticamente pela rede; Vírus precisam de um arquivo hospedeiro", "São exatamente a mesma coisa"], "resposta": "Worms se propagam automaticamente pela rede; Vírus precisam de um arquivo hospedeiro"},
-    {"tema": "Ataques", "pergunta": "O que é o 'Credential Stuffing'?", "opcoes": ["Tentar senhas aleatórias", "Usar listas de usuários e senhas vazadas de outros sites", "Roubar o Wi-Fi do vizinho", "Enviar links maliciosos via WhatsApp"], "resposta": "Usar listas de usuários e senhas vazadas de outros sites"},
-    {"tema": "Ataques", "pergunta": "Qual ataque visa sequestrar a sessão ativa de um usuário no navegador?", "opcoes": ["Session Hijacking", "SQL Injection", "Buffer Overflow", "Bluejacking"], "resposta": "Session Hijacking"},
-    {"tema": "Ataques", "pergunta": "O 'Spyware' tem como objetivo principal:", "opcoes": ["Criptografar arquivos", "Monitorar atividades do usuário e coletar informações sem consentimento", "Derrubar o servidor da empresa", "Ajudar o usuário a limpar o disco"], "resposta": "Monitorar atividades do usuário e coletar informações sem consentimento"},
+        # 3. ATAQUES
+        {"tema": "Ataques", "pergunta": "Qual ataque redireciona o tráfego de um site legítimo para um falso via DNS?", "opcoes": ["Phishing", "Pharming", "Smishing", "Vishing"], "resposta": "Pharming"},
+        {"tema": "Ataques", "pergunta": "O que é um ataque de 'Ransomware'?", "opcoes": ["Roubo de CPU", "Criptografia de dados para extorsão", "Envio de spam", "Troca de papel de parede"], "resposta": "Criptografia de dados para extorsão"},
+        {"tema": "Ataques", "pergunta": "Um ataque DDoS foca em qual pilar?", "opcoes": ["Integridade", "Confidencialidade", "Disponibilidade", "Autenticidade"], "resposta": "Disponibilidade"},
+        {"tema": "Ataques", "pergunta": "O que é 'Engenharia Social'?", "opcoes": ["Programação em Python", "Manipulação psicológica para obter dados", "Ataque ao hardware", "Configuração de rede"], "resposta": "Manipulação psicológica para obter dados"},
+        {"tema": "Ataques", "pergunta": "Qual ataque tenta todas as combinações possíveis de senhas?", "opcoes": ["XSS", "Brute Force", "SQLi", "MitM"], "resposta": "Brute Force"},
 
-    # --- 4. SEGURANÇA EM APLICAÇÕES WEB ---
-    {"tema": "Web Security", "pergunta": "Qual cabeçalho HTTP ajuda a prevenir ataques de XSS informando ao navegador quais scripts são confiáveis?", "opcoes": ["User-Agent", "Content-Security-Policy (CSP)", "Server", "Host"], "resposta": "Content-Security-Policy (CSP)"},
-    {"tema": "Web Security", "pergunta": "O que é a vulnerabilidade de 'Insecure Deserialization'?", "opcoes": ["Uso de senhas fracas", "Transformar dados maliciosos em objetos executáveis pelo servidor", "Falta de SSL no site", "Muitas imagens pesadas no código"], "resposta": "Transformar dados maliciosos em objetos executáveis pelo servidor"},
-    {"tema": "Web Security", "pergunta": "Qual o risco de expor 'Mensagens de Erro' detalhadas do banco de dados na página web?", "opcoes": ["Nenhum risco", "Ajudar o atacante a mapear a estrutura do banco e versões de software", "Deixar o site mais bonito", "Melhorar o SEO do Google"], "resposta": "Ajudar o atacante a mapear a estrutura do banco e versões de software"},
-    {"tema": "Web Security", "pergunta": "O 'Clickjacking' induz o usuário a:", "opcoes": ["Digitar sua senha no terminal", "Clicar em um elemento invisível ou sobreposto para realizar ações indesejadas", "Comprar produtos falsos", "Baixar um arquivo PDF"], "resposta": "Clicar em um elemento invisível ou sobreposto para realizar ações indesejadas"},
-    {"tema": "Web Security", "pergunta": "A prática de 'Input Validation' deve ser feita em qual lado?", "opcoes": ["Apenas no Cliente (Browser)", "Apenas no Servidor", "Tanto no Cliente quanto no Servidor (idealmente)", "Nenhuma das anteriores"], "resposta": "Tanto no Cliente quanto no Servidor (idealmente)"},
+        # 4. WEB SECURITY
+        {"tema": "Web Security", "pergunta": "O que previne o SQL Injection?", "opcoes": ["Antivírus", "Prepared Statements / Consultas Parametrizadas", "Reiniciar o PC", "Usar HTTPS"], "resposta": "Prepared Statements / Consultas Parametrizadas"},
+        {"tema": "Web Security", "pergunta": "O ataque XSS ocorre no:", "opcoes": ["Banco de dados", "Navegador do usuário (Client-side)", "Cabo de rede", "Processador"], "resposta": "Navegador do usuário (Client-side)"},
+        {"tema": "Web Security", "pergunta": "Para que serve o arquivo robots.txt?", "opcoes": ["Segurança máxima", "Instruir rastreadores de busca (SEO)", "Bloquear hackers", "Salvar senhas"], "resposta": "Instruir rastreadores de busca (SEO)"},
+        {"tema": "Web Security", "pergunta": "O que é o Cross-Site Request Forgery (CSRF)?", "opcoes": ["Roubo de senha", "Forçar usuário logado a executar ações indesejadas", "Derrubar o site", "Inundar o chat"], "resposta": "Forçar usuário logado a executar ações indesejadas"},
+        {"tema": "Web Security", "pergunta": "O uso de HTTPS garante:", "opcoes": ["Site sem vírus", "Criptografia no trânsito dos dados", "Backup automático", "Velocidade"], "resposta": "Criptografia no trânsito dos dados"},
 
-    # --- 5. ANÁLISE DE LOGS E EVENTOS DE SEGURANÇA ---
-    {"tema": "Logs", "pergunta": "O que caracteriza um log de 'Falso Positivo' em um SOC?", "opcoes": ["Um ataque real que não foi detectado", "Um alerta gerado por uma atividade legítima mas identificada como suspeita", "Um log que foi apagado pelo invasor", "Um erro de hardware no servidor de logs"], "resposta": "Um alerta gerado por uma atividade legítima mas identificada como suspeita"},
-    {"tema": "Logs", "pergunta": "Qual protocolo é o padrão para o envio de mensagens de log em sistemas Unix/Linux para um servidor central?", "opcoes": ["HTTP", "SNMP", "Syslog", "FTP"], "resposta": "Syslog"},
-    {"tema": "Logs", "pergunta": "Ao analisar logs de um servidor web, o código de status HTTP '404' repetido milhares de vezes para diferentes URLs vindo de um único IP sugere:", "opcoes": ["Um ataque de negação de serviço (DoS)", "Um brute force de diretórios ou arquivos (Directory Busting)", "Sucesso na invasão do sistema", "Usuário errando a própria senha"], "resposta": "Um brute force de diretórios ou arquivos (Directory Busting)"},
-    {"tema": "Logs", "pergunta": "O que é o 'Log Retention Period'?", "opcoes": ["O tempo que o log leva para ser enviado ao SIEM", "O período de tempo que os logs devem ser armazenados antes de serem excluídos", "A velocidade de gravação do disco", "O tamanho máximo de um arquivo de log"], "resposta": "O período de tempo que os logs devem ser armazenados antes de serem excluídos"},
-    {"tema": "Logs", "pergunta": "Qual a importância da Sincronização de Relógio (NTP) para a análise de logs?", "opcoes": ["Economizar bateria dos servidores", "Garantir a ordem cronológica correta para correlação de eventos entre diferentes dispositivos", "Aumentar a velocidade da rede", "Evitar que o servidor trave"], "resposta": "Garantir a ordem cronológica correta para correlação de eventos entre diferentes dispositivos"},
+        # 5. LOGS
+        {"tema": "Logs", "pergunta": "Qual ferramenta centraliza logs?", "opcoes": ["Excel", "SIEM", "Notepad", "Firewall"], "resposta": "SIEM"},
+        {"tema": "Logs", "pergunta": "O código HTTP 200 significa:", "opcoes": ["Erro", "Não encontrado", "Sucesso/OK", "Acesso negado"], "resposta": "Sucesso/OK"},
+        {"tema": "Logs", "pergunta": "Por que a sincronização NTP é vital?", "opcoes": ["Para os logs terem o mesmo horário e permitir correlação", "Para o PC não travar", "Para economizar luz", "Para o Windows atualizar"], "resposta": "Para os logs terem o mesmo horário e permitir correlação"},
+        {"tema": "Logs", "pergunta": "Um falso positivo é:", "opcoes": ["Ataque real", "Alerta legítimo", "Alerta falso para atividade inofensiva", "Invasão bem sucedida"], "resposta": "Alerta falso para atividade inofensiva"},
+        {"tema": "Logs", "pergunta": "Logs de auditoria devem ser:", "opcoes": ["Apagados todo dia", "Protegidos contra alteração", "Públicos", "Coloridos"], "resposta": "Protegidos contra alteração"},
 
-    # --- 6. RESPOSTA A INCIDENTES E GESTÃO DE RISCOS ---
-    {"tema": "Incidentes", "pergunta": "O que é a fase de 'Erradicação' em um plano de Resposta a Incidentes?", "opcoes": ["Avisar os clientes sobre o ataque", "Remover completamente a causa raiz do incidente (ex: apagar malware, fechar vulnerabilidade)", "Desligar a internet da empresa para sempre", "Restaurar o backup sem investigar a causa"], "resposta": "Remover completamente a causa raiz do incidente (ex: apagar malware, fechar vulnerabilidade)"},
-    {"tema": "Incidentes", "pergunta": "Um 'Incidente de Segurança' é definido como:", "opcoes": ["Qualquer erro cometido por um funcionário", "Um evento que compromete a confidencialidade, integridade ou disponibilidade de um ativo", "A compra de um novo firewall", "A troca anual de senhas"], "resposta": "Um evento que compromete a confidencialidade, integridade ou disponibilidade de um ativo"},
-    {"tema": "Incidentes", "pergunta": "Qual a diferença entre 'Risco' e 'Ameaça'?", "opcoes": ["São sinônimos", "Ameaça é o potencial dano; Risco é a probabilidade de a ameaça explorar uma vulnerabilidade", "Risco é o hacker; Ameaça é o vírus", "Ameaça é interna; Risco é externo"], "resposta": "Ameaça é o potencial dano; Risco é a probabilidade de a ameaça explorar uma vulnerabilidade"},
-    {"tema": "Incidentes", "pergunta": "O que é um 'Honeypot'?", "opcoes": ["Um software de antivírus gratuito", "Um sistema isca projetado para ser invadido e coletar informações sobre o atacante", "Uma senha muito difícil de quebrar", "O servidor principal da empresa"], "resposta": "Um sistema isca projetado para ser invadido e coletar informações sobre o atacante"},
-    {"tema": "Incidentes", "pergunta": "Na gestão de riscos, 'Aceitar o Risco' é uma decisão válida quando:", "opcoes": ["O custo da mitigação é maior que o valor do ativo protegido", "Não sabemos como resolver o problema", "O hacker é muito famoso", "A empresa não tem um setor de TI"], "resposta": "O custo da mitigação é maior que o valor do ativo protegido"},
+        # 6. INCIDENTES
+        {"tema": "Incidentes", "pergunta": "A fase de 'Contenção' visa:", "opcoes": ["Prender o hacker", "Parar a propagação do dano", "Formatar o servidor", "Avisar a polícia"], "resposta": "Parar a propagação do dano"},
+        {"tema": "Incidentes", "pergunta": "O que é a 'Causa Raiz'?", "opcoes": ["O dono da empresa", "O motivo real que permitiu o incidente", "O primeiro log", "O nome do vírus"], "resposta": "O motivo real que permitiu o incidente"},
+        {"tema": "Incidentes", "pergunta": "Qual a última fase da resposta a incidentes?", "opcoes": ["Contenção", "Lições Aprendidas", "Erradicação", "Detecção"], "resposta": "Lições Aprendidas"},
+        {"tema": "Incidentes", "pergunta": "O que é 'Mitigar' um risco?", "opcoes": ["Ignorar", "Reduzir o impacto ou probabilidade", "Contratar seguro", "Desligar tudo"], "resposta": "Reduzir o impacto ou probabilidade"},
+        {"tema": "Incidentes", "pergunta": "Quem compõe o CSIRT?", "opcoes": ["Apenas o RH", "Time de resposta a incidentes de segurança", "Os clientes", "Os estagiários"], "resposta": "Time de resposta a incidentes de segurança"},
 
-    # --- 7. BOAS PRÁTICAS DE DESENVOLVIMENTO ---
-    {"tema": "DevSecOps", "pergunta": "Qual o objetivo do 'Code Review' focado em segurança?", "opcoes": ["Verificar se o código está bonito", "Identificar vulnerabilidades lógicas e falhas de segurança antes do deploy", "Contar quantas linhas o programador escreveu", "Garantir que o programa rode em computadores antigos"], "resposta": "Identificar vulnerabilidades lógicas e falhas de segurança antes do deploy"},
-    {"tema": "DevSecOps", "pergunta": "O que é 'Secrets Management' no desenvolvimento?", "opcoes": ["Esconder o nome dos desenvolvedores", "Prática de gerenciar e proteger chaves de API, senhas e certificados (evitando hardcoding)", "Apagar o código após o uso", "Não contar para ninguém qual linguagem foi usada"], "resposta": "Prática de gerenciar e proteger chaves de API, senhas e certificados (evitando hardcoding)"},
-    {"tema": "DevSecOps", "pergunta": "O termo 'Immutable Infrastructure' (Infraestrutura Imutável) auxilia na segurança porque:", "opcoes": ["Impede qualquer atualização", "Servidores são substituídos em vez de modificados, garantindo um estado conhecido e limpo", "Os servidores são feitos de hardware especial que não quebra", "Ninguém pode acessar o servidor via SSH"], "resposta": "Servidores são substituídos em vez de modificados, garantindo um estado conhecido e limpo"},
-    {"tema": "DevSecOps", "pergunta": "Qual ferramenta é usada para análise de composição de software (SCA)?", "opcoes": ["Para medir a velocidade do site", "Para identificar vulnerabilidades em bibliotecas e dependências de terceiros", "Para desenhar o layout da página", "Para compactar arquivos"], "resposta": "Para identificar vulnerabilidades em bibliotecas e dependências de terceiros"},
-    {"tema": "DevSecOps", "pergunta": "O que significa 'Princípio do Fail-Safe Defaults'?", "opcoes": ["O sistema deve travar se houver erro", "Por padrão, o acesso deve ser negado a menos que explicitamente permitido", "O sistema deve resetar a senha de todos todos os dias", "O backup deve ser feito apenas se o sistema falhar"], "resposta": "Por padrão, o acesso deve ser negado a menos que explicitamente permitido"},
+        # 7. DEVSEC OPS
+        {"tema": "DevSecOps", "pergunta": "O 'Shift-Left' move a segurança para onde?", "opcoes": ["Para o final", "Para o início do ciclo de desenvolvimento", "Para a direita", "Para a nuvem"], "resposta": "Para o início do ciclo de desenvolvimento"},
+        {"tema": "DevSecOps", "pergunta": "O que SAST analisa?", "opcoes": ["O código em execução", "O código fonte estático", "O tráfego de rede", "A biometria"], "resposta": "O código fonte estático"},
+        {"tema": "DevSecOps", "pergunta": "Qual o perigo de 'Hardcoded Secrets'?", "opcoes": ["Deixa o código rápido", "Exposição de senhas no código fonte", "Ajuda no backup", "Melhora o design"], "resposta": "Exposição de senhas no código fonte"},
+        {"tema": "DevSecOps", "pergunta": "DAST testa a aplicação:", "opcoes": ["Desligada", "Em tempo de execução (Dinâmico)", "No papel", "Em PDF"], "resposta": "Em tempo de execução (Dinâmico)"},
+        {"tema": "DevSecOps", "pergunta": "O que é CI/CD?", "opcoes": ["Um antivírus", "Integração e Entrega Contínua", "Um cabo de rede", "Protocolo de e-mail"], "resposta": "Integração e Entrega Contínua"},
 
-    # --- 8. CONTINUIDADE DE NEGÓCIOS ---
-    {"tema": "Continuidade", "pergunta": "O que é um 'Hot Site'?", "opcoes": ["Um site muito visitado", "Um local de recuperação totalmente equipado e pronto para operar em minutos ou horas", "Um servidor que esquenta muito", "Um site que contém notícias sobre hackers"], "resposta": "Um local de recuperação totalmente equipado e pronto para operar em minutos ou horas"},
-    {"tema": "Continuidade", "pergunta": "Qual documento descreve as etapas para recuperar a infraestrutura de TI após um desastre?", "opcoes": ["SLA", "DRP (Disaster Recovery Plan)", "NDA", "AUP"], "resposta": "DRP (Disaster Recovery Plan)"},
-    {"tema": "Continuidade", "pergunta": "O teste de continuidade do tipo 'Tabletop' consiste em:", "opcoes": ["Derrubar o servidor de propósito para ver o que acontece", "Uma simulação teórica baseada em discussão de cenários entre os responsáveis", "Trocar todos os computadores da empresa", "Fazer um backup em fita"], "resposta": "Uma simulação teórica baseada em discussão de cenários entre os responsáveis"},
-    {"tema": "Continuidade", "pergunta": "Qual a principal meta do BCP (Business Continuity Plan)?", "opcoes": ["Manter os processos críticos do negócio funcionando durante e após uma interrupção", "Comprar servidores novos todo ano", "Aumentar o lucro da empresa", "Treinar funcionários em Excel"], "resposta": "Manter os processos críticos do negócio funcionando durante e após uma interrupção"},
-    {"tema": "Continuidade", "pergunta": "O que é 'Redundância Geográfica'?", "opcoes": ["Ter dois roteadores na mesma sala", "Manter cópias de segurança ou sistemas em locais fisicamente distantes entre si", "Ter funcionários que falam várias línguas", "Usar o Google Maps para monitorar a rede"], "resposta": "Manter cópias de segurança ou sistemas em locais fisicamente distantes entre si"},
+        # 8. CONTINUIDADE
+        {"tema": "Continuidade", "pergunta": "O plano DRP foca em:", "opcoes": ["Pessoas", "Recuperação de Desastres de TI", "Marketing", "Vendas"], "resposta": "Recuperação de Desastres de TI"},
+        {"tema": "Continuidade", "pergunta": "Qual o menor tempo de recuperação?", "opcoes": ["Cold Site", "Warm Site", "Hot Site", "Backup em fita"], "resposta": "Hot Site"},
+        {"tema": "Continuidade", "pergunta": "BIA (Business Impact Analysis) serve para:", "opcoes": ["Contratar gente", "Identificar processos críticos e impactos de falhas", "Comprar móveis", "Limpar o datacenter"], "resposta": "Identificar processos críticos e impactos de falhas"},
+        {"tema": "Continuidade", "pergunta": "O backup incremental salva:", "opcoes": ["Tudo sempre", "Apenas o que mudou desde o último backup", "Nada", "Apenas fotos"], "resposta": "Apenas o que mudou desde o último backup"},
+        {"tema": "Continuidade", "pergunta": "Resiliência é a capacidade de:", "opcoes": ["Quebrar fácil", "Resistir e se recuperar de falhas", "Gastar pouco", "Ser rápido"], "resposta": "Resistir e se recuperar de falhas"},
 
-    # --- 9. USO SEGURO DE TECNOLOGIAS EMERGENTES (IA) ---
-    {"tema": "IA", "pergunta": "O que é o risco de 'Shadow AI'?", "opcoes": ["Uma IA que trabalha à noite", "O uso de ferramentas de IA por funcionários sem aprovação ou conhecimento do departamento de TI/Segurança", "Uma IA que não tem interface gráfica", "Um ataque que apaga o modelo da IA"], "resposta": "O uso de ferramentas de IA por funcionários sem aprovação ou conhecimento do departamento de TI/Segurança"},
-    {"tema": "IA", "pergunta": "Na segurança de IA, o termo 'Jailbreaking' refere-se a:", "opcoes": ["Instalar apps piratas no celular", "Técnicas de prompt que convencem a IA a ignorar suas diretrizes éticas e de segurança", "Hackear o servidor da OpenAI", "Aumentar a memória da placa de vídeo"], "resposta": "Técnicas de prompt que convencem a IA a ignorar suas diretrizes éticas e de segurança"},
-    {"tema": "IA", "pergunta": "Por que o 'Data Poisoning' é uma ameaça à IA?", "opcoes": ["Ele estraga o hardware da IA", "Ele corrompe o conjunto de dados de treinamento para enviesar ou manipular as respostas da IA", "Ele faz a IA responder mais rápido", "Ele impede a IA de se conectar à internet"], "resposta": "Ele corrompe o conjunto de dados de treinamento para enviesar ou manipular as respostas da IA"},
-    {"tema": "IA", "pergunta": "Ao utilizar IAs generativas para escrever código, qual a principal recomendação de segurança?", "opcoes": ["Confiar cegamente no código gerado", "Revisar e testar manualmente o código em busca de vulnerabilidades antes de usá-lo", "Nunca usar IA para programar", "Usar apenas IA para scripts de backup"], "resposta": "Revisar e testar manualmente o código em busca de vulnerabilidades antes de usá-lo"},
-]
-    
-    random.shuffle(st.session_state.questoes)
+        # 9. IA
+        {"tema": "IA", "pergunta": "Prompt Injection visa:", "opcoes": ["Melhorar a IA", "Manipular a IA para ignorar filtros de segurança", "Limpar o banco", "Traduzir texto"], "resposta": "Manipular a IA para ignorar filtros de segurança"},
+        {"tema": "IA", "pergunta": "O que é Alucinação?", "opcoes": ["IA feliz", "IA gerando fatos falsos com convicção", "IA lenta", "IA sem internet"], "resposta": "IA gerando fatos falsos com convicção"},
+        {"tema": "IA", "pergunta": "Uso de dados sensíveis em IAs públicas gera risco de:", "opcoes": ["Falta de energia", "Vazamento de dados (Data Leakage)", "Melhoria do modelo", "Velocidade"], "resposta": "Vazamento de dados (Data Leakage)"},
+        {"tema": "IA", "pergunta": "IA Explicável (XAI) foca em:", "opcoes": ["Transparência e entendimento das decisões da IA", "Velocidade", "Preço baixo", "Cores"], "resposta": "Transparência e entendimento das decisões da IA"},
+        {"tema": "IA", "pergunta": "Shadow AI ocorre quando:", "opcoes": ["A IA está no modo escuro", "Funcionários usam IA sem aval da TI/Segurança", "A IA é hackeada", "A IA desliga"], "resposta": "Funcionários usam IA sem aval da TI/Segurança"}
+    ]
+    random.shuffle(questoes_base)
+    st.session_state.questoes = questoes_base
+
+# --- ESTADOS DO SISTEMA ---
+if 'indice' not in st.session_state:
     st.session_state.indice = 0
-    st.session_state.acertos = 0
+if 'pontos' not in st.session_state:
+    st.session_state.pontos = 0
+if 'respondido' not in st.session_state:
     st.session_state.respondido = False
+if 'finalizado' not in st.session_state:
+    st.session_state.finalizado = False
 
-# Verifica se ainda há perguntas
-if st.session_state.indice < len(st.session_state.questoes):
+# --- FUNÇÕES DE NAVEGAÇÃO ---
+def proxima_questao():
+    if st.session_state.indice < len(st.session_state.questoes) - 1:
+        st.session_state.indice += 1
+        st.session_state.respondido = False
+    else:
+        st.session_state.finalizado = True
+
+def reiniciar():
+    st.session_state.indice = 0
+    st.session_state.pontos = 0
+    st.session_state.respondido = False
+    st.session_state.finalizado = False
+    random.shuffle(st.session_state.questoes)
+
+# --- INTERFACE ---
+st.title("🛡️ Simulado Preparatório Cybersecurity")
+st.write("Focado em SOC Analyst II, Riscos e Resposta a Incidentes.")
+
+if not st.session_state.finalizado:
     q = st.session_state.questoes[st.session_state.indice]
     
-    st.write(f"**Questão {st.session_state.indice + 1} de {len(st.session_state.questoes)}**")
-    st.info(f"**Tema:** {q['tema']}\n\n{q['pergunta']}")
+    # Header de progresso
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.info(f"**Tema:** {q['tema']}")
+    with col2:
+        st.write(f"Questão {st.session_state.indice + 1}/{len(st.session_state.questoes)}")
+    
+    st.progress((st.session_state.indice + 1) / len(st.session_state.questoes))
+    
+    st.markdown(f"### {q['pergunta']}")
+    
+    # Usamos o radio mas controlamos a exibição do resultado
+    escolha = st.radio("Selecione a alternativa:", q['opcoes'], index=None, key=f"radio_{st.session_state.indice}")
 
-    # Cria os botões de resposta
-    for opcao in q['opcoes']:
-        # Se já respondeu, desabilita os botões para não clicar de novo
-        if st.button(opcao, key=f"btn_{st.session_state.indice}_{opcao}", use_container_width=True, disabled=st.session_state.respondido):
-            st.session_state.respondido = True
-            if opcao == q['correta']:
-                st.success(f"✅ Correto! {q['explicacao']}")
-                st.session_state.acertos += 1
+    if not st.session_state.respondido:
+        if st.button("Confirmar Resposta"):
+            if escolha:
+                st.session_state.respondido = True
+                if escolha == q['resposta']:
+                    st.session_state.pontos += 1
+                    st.toast("Acertou! 🎯", icon="✅")
+                else:
+                    st.toast("Errou... ❌", icon="⚠️")
+                st.rerun()
             else:
-                st.error(f"❌ Errado! A resposta era: {q['correta']}. {q['explicacao']}")
-            
-            # Aguarda 3 segundos para o usuário ler a explicação e recarrega
-            time.sleep(3)
-            st.session_state.indice += 1
-            st.session_state.respondido = False
-            st.rerun()
+                st.warning("Selecione uma opção antes de confirmar!")
+    else:
+        # Exibe o resultado da questão após responder
+        if escolha == q['resposta']:
+            st.success(f"Correto! A resposta é: **{q['resposta']}**")
+        else:
+            st.error(f"Incorreto. A resposta certa era: **{q['resposta']}**")
+        
+        # Botão para próxima questão aparece APÓS responder
+        st.button("Próxima Questão ➡️", on_click=proxima_questao)
 
 else:
     st.balloons()
-    st.success(f"🏆 Finalizado! Acertos: {st.session_state.acertos}/{len(st.session_state.questoes)}")
-    if st.button("Reiniciar Quiz"):
-        st.session_state.indice = 0
-        st.session_state.acertos = 0
-        random.shuffle(st.session_state.questoes)
-        st.rerun()
+    st.header("🏁 Simulado Concluído!")
+    score = (st.session_state.pontos / len(st.session_state.questoes)) * 100
+    
+    st.metric("Sua Pontuação", f"{st.session_state.pontos}/{len(st.session_state.questoes)}", f"{score:.1f}%")
+    
+    if score >= 80:
+        st.success("Desempenho Excelente! Você está pronto.")
+    elif score >= 60:
+        st.warning("Bom desempenho, mas revise os erros antes da prova.")
+    else:
+        st.error("Recomendamos revisar todos os temas e tentar novamente.")
+        
+    st.button("Reiniciar Simulado 🔄", on_click=reiniciar)
+
+st.sidebar.markdown("---")
+st.sidebar.write(f"📊 **Acertos atuais:** {st.session_state.pontos}")
+if st.sidebar.button("Zerar progresso"):
+    reiniciar()
+    st.rerun()
